@@ -1,0 +1,37 @@
+{
+  "name": "scrapper",
+  "version": "1.0.0",
+  "description": "Web Scrapper Assignment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TParksJr/Scrapper.git"
+  },
+  "keywords": [
+    "Web",
+    "Scrapper",
+    "Cheerio",
+    "Request",
+    "Express",
+    "Handlebars"
+  ],
+  "author": "Tyson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TParksJr/Scrapper/issues"
+  },
+  "homepage": "https://github.com/TParksJr/Scrapper#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cheerio": "^1.0.0-rc.2",
+    "express": "^4.16.4",
+    "express-handlebars": "^3.0.0",
+    "mongoose": "^5.3.2",
+    "morgan": "^1.9.1",
+    "nodemon": "^1.18.4",
+    "request": "^2.88.0"
+  }
+}
