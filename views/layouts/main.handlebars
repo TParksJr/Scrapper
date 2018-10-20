@@ -12,13 +12,30 @@
 <body>
 
   <div class="jumbotron" style="background-color: rgb(31,111,193); color: white; text-align: center">
-    <h1>The Star Scrapper</h1>
+    <h1 style="font-size: 300%">The Star Scrapper</h1>
     <button class="btn btn-primary btn-lg" id="scrape">Scrape new articles!</button>
   </div>
 
-  <div id="results"></div>
-
   {{{body}}}
+
+  <div class="modal commentsModal" tabindex="-1" role="dialog" data-toggle="modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title"><strong>Leave a comment below!</strong></h2>
+        </div>
+        <div class="modal-body">
+          <textarea id="comment" rows="4" cols="50"></textarea>
+          <button class="btn btn-primary modal-close" id="submit">Submit</button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"><a href="/" class="modal-close" id="close">Return
+              Home</a></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -29,11 +46,28 @@
   crossorigin="anonymous"></script>
 <script>
   $(function () {
+    var articleID;
+
     $(document).on("click", "#scrape", function (event) {
       $.get("/scrape", function (data) {
-        console.log(data);
-        
+
       });
+    });
+
+    $(document).on("click", "#submit", function (event) {
+      let comment = $("#comment").val().trim();
+      $.post("/comment", {
+        article: articleID,
+        content: comment,
+        date: new Date
+      }, function (data) {
+        $(".commentsModal").modal({"show": false});
+      });
+    });
+
+    $(document).on("click", ".commentButton", function (event) {
+      articleID = $(this).parent().attr("data-id");
+      $(".commentsModal").modal();
     });
   });
 </script>

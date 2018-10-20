@@ -10,6 +10,8 @@ const Article = require("./models/Article.js");
 const Comment = require("./models/Comment.js");
 
 const results = [];
+const newResults = [];
+const baseURL = "https://www.thestar.com";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,9 +30,14 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => console.log("connected to scrapper_db!"));
 
-app.get("/", (req, res) => res.render("index"));
-
-const baseURL = "https://www.thestar.com";
+app.get("/", function (req, res) {
+    Article.find({}, function (err, articles) {
+            if (err) return handleError(err);
+            console.log(articles);
+            res.render("index", {articles});
+        })
+        .catch(err => res.json(err));
+});
 
 app.get("/scrape", function (req, res) {
     request(baseURL, function (error, response, body) {
@@ -46,9 +53,13 @@ app.get("/scrape", function (req, res) {
         });
 
         for (let i = 0; i < results.length; i++) {
-            Article.find({title: results[i].title})
-                .then(function(result) {
+            Article.find({ title: results[i].title })
+                .then(function (result) {
                     if (result.length === 0) {
+                        newResults.push({
+                            title: title,
+                            link: baseURL + link
+                        });
                         Article.create(results[i])
                             .then(newEntry => console.log(newEntry))
                             .catch(err => res.json(err));
@@ -59,8 +70,22 @@ app.get("/scrape", function (req, res) {
                 .catch(err => res.json(err));
         };
 
-        res.json(results);
+        res.json(newResults);
+        results.length = 0;
+        newResults.length = 0;
+
     });
+});
+
+app.post("/comment", function (req, res) {
+    let data = req.body;
+    Comment.create({
+        article: data.articleID,
+        content: data.content,
+        date: data.date
+    })
+    .then(newComment => console.log(newComment))
+    .catch(err => res.json(err));
 });
 
 app.listen(PORT, () => console.log(`App listening on: localhost:${PORT}`));
