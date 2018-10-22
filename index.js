@@ -33,11 +33,11 @@ db.once('open', () => console.log("connected to scrapper_db!"));
 app.get("/", function (req, res) {
     Article.find({}, function (err, articles) {
             if (err) return handleError(err);
-            console.log(articles);
             res.render("index", {articles});
         })
         .catch(err => res.json(err));
 });
+
 
 app.get("/scrape", function (req, res) {
     request(baseURL, function (error, response, body) {
@@ -51,15 +51,10 @@ app.get("/scrape", function (req, res) {
                 link: baseURL + link
             });
         });
-
-        for (let i = 0; i < results.length; i++) {
-            Article.find({ title: results[i].title })
-                .then(function (result) {
+         for (let i = 0; i < results.length; i++) {
+            Article.find({title: results[i].title})
+                .then(function(result) {
                     if (result.length === 0) {
-                        newResults.push({
-                            title: title,
-                            link: baseURL + link
-                        });
                         Article.create(results[i])
                             .then(newEntry => console.log(newEntry))
                             .catch(err => res.json(err));
@@ -69,11 +64,7 @@ app.get("/scrape", function (req, res) {
                 })
                 .catch(err => res.json(err));
         };
-
-        res.json(newResults);
-        results.length = 0;
-        newResults.length = 0;
-
+        res.json(results);
     });
 });
 

@@ -50,8 +50,8 @@
 
     $(document).on("click", "#scrape", function (event) {
       $.get("/scrape", function (data) {
-
-      });
+        console.log(data);
+      }).then(() => location.reload(true));
     });
 
     $(document).on("click", "#submit", function (event) {
