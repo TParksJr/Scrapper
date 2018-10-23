@@ -1,8 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
+  <meta name="description" content="Tyson's Portfolio">
+  <meta name="keywords" content="Handlebars, MongoDB, Mongoose, University, Toronto, coding, bootcamp">
+  <meta name="author" content="Tyson">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
     crossorigin="anonymous">
 
@@ -12,8 +16,9 @@
 <body>
 
   <div class="jumbotron" style="background-color: rgb(31,111,193); color: white; text-align: center">
-    <h1 style="font-size: 300%">The Star Scrapper</h1>
-    <button class="btn btn-primary btn-lg" id="scrape">Scrape new articles!</button>
+    <a href="/"><h1 style="font-size: 300%; color: white">The Star Scrapper</h1></a>
+    <a class="btn btn-warning btn-lg" id="scrape" href="/scrape">Scrape new articles!</a>
+    <a class="btn btn-danger btn-lg" id="saved" href="/saved">View saved articles!</a>
   </div>
 
   {{{body}}}
@@ -26,11 +31,10 @@
         </div>
         <div class="modal-body">
           <textarea id="comment" rows="4" cols="50"></textarea>
-          <button class="btn btn-primary modal-close" id="submit">Submit</button>
+          <button class="btn btn-primary modal-close" id="submit">Save</button>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><a href="/" class="modal-close" id="close">Return
-              Home</a></button>
+          <button type="button" class="btn btn-default" data-dismiss="modal"><a href="/" class="modal-close" id="close">Close</a></button>
         </div>
       </div>
     </div>
@@ -46,7 +50,11 @@
   crossorigin="anonymous"></script>
 <script>
   $(function () {
-    var articleID;
+    let articleID;
+
+    const getSaved = function () {
+
+    };
 
     $(document).on("click", "#scrape", function (event) {
       $.get("/scrape", function (data) {
@@ -56,10 +64,10 @@
 
     $(document).on("click", "#submit", function (event) {
       let comment = $("#comment").val().trim();
-      $.post("/comment", {
+      $.post("/comment/" + articleID, {
         article: articleID,
         content: comment,
-        date: new Date
+        date: Date.now()
       }, function (data) {
         $(".commentsModal").modal({"show": false});
       });
@@ -68,6 +76,32 @@
     $(document).on("click", ".commentButton", function (event) {
       articleID = $(this).parent().attr("data-id");
       $(".commentsModal").modal();
+    });
+
+    $(document).on("click", ".saveButton", function (event) {
+      articleID = $(this).parent().attr("data-id");
+      $.ajax({
+        url: "/save/" + articleID,
+        method: "PUT"
+      }).then(function (response) {
+        console.log(response);
+      });
+    });
+
+    $(document).on("click", ".unsaveButton", function (event) {
+      articleID = $(this).parent().attr("data-id");
+      $.ajax({
+        url: "/unsave/" + articleID,
+        method: "PUT"
+      }).then(function (response) {
+        console.log(response);
+      });
+    });
+
+    $(document).on("click", "#saved", function (event) {
+      $.get("/saved", function (data) {
+        
+      });
     });
   });
 </script>

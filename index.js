@@ -31,11 +31,10 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => console.log("connected to scrapper_db!"));
 
 app.get("/", function (req, res) {
-    Article.find({}, function (err, articles) {
+    Article.find({}).sort("-date").exec(function (err, articles) {
             if (err) return handleError(err);
             res.render("index", {articles});
         })
-        .catch(err => res.json(err));
 });
 
 
@@ -68,15 +67,47 @@ app.get("/scrape", function (req, res) {
     });
 });
 
-app.post("/comment", function (req, res) {
+app.post("/comment/:id", function (req, res) {
     let data = req.body;
+    let id = req.params.id;
+
+    /*Article.findByIdAndUpdate(id, {comments: {
+        article: id,
+        content: data,
+        date: Date.now()
+    }}, function(err, updated) {
+        if (err) throw err;
+    });*/
+
     Comment.create({
-        article: data.articleID,
-        content: data.content,
-        date: data.date
+        article: id,
+        content: data,
+        date: Date.now()
     })
     .then(newComment => console.log(newComment))
     .catch(err => res.json(err));
+});
+
+app.put("/save/:id", function (req, res) {
+    let id = req.params.id;
+    Article.findByIdAndUpdate(id, {saved: true}, function(err, updated) {
+        if (err) throw err;
+    });
+});
+
+app.put("/unsave/:id", function (req, res) {
+    let id = req.params.id;
+    Article.findByIdAndUpdate(id, {saved: false}, function(err, updated) {
+        if (err) throw err;
+    });
+});
+
+app.get("/saved", function (req, res) {
+    Article.find({}, function (err, articles) {
+            if (err) return handleError(err);
+            res.render("saved", {articles});
+        })
+        .catch(err => res.json(err));
 });
 
 app.listen(PORT, () => console.log(`App listening on: localhost:${PORT}`));
